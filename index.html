@@ -6,237 +6,525 @@
 <title>Harstone Audit LLP — Audit Portal</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --navy: #0f2744; --navy-mid: #1a3a5c; --blue: #1e5fa8; --blue-light: #2e7dd1;
-    --accent: #00c9a7; --accent-warm: #f59e0b; --danger: #ef4444; --success: #10b981;
-    --bg: #f0f4f8; --card: #ffffff; --text: #1a2535; --text-muted: #64748b; --border: #e2e8f0;
-  }
-  * { margin:0; padding:0; box-sizing:border-box; }
-  body { font-family:'DM Sans',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; display:flex; flex-direction:column; }
-  .header { background:linear-gradient(135deg,var(--navy) 0%,var(--navy-mid) 60%,#1a4a7a 100%); box-shadow:0 4px 20px rgba(0,0,0,.3); }
-  .header-inner { max-width:1200px; margin:0 auto; padding:18px 32px; display:flex; align-items:center; justify-content:space-between; }
-  .header-left { display:flex; align-items:center; gap:14px; }
-  .logo-box { width:40px; height:40px; background:var(--accent); border-radius:10px; display:flex; align-items:center; justify-content:center; font-family:'DM Mono',monospace; font-weight:500; color:var(--navy); font-size:15px; }
-  .header-title h1 { font-size:17px; font-weight:600; color:white; }
-  .header-title p { font-size:12px; color:rgba(255,255,255,.5); margin-top:2px; }
-  .header-right { display:flex; gap:10px; align-items:center; }
-  .pill { background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.15); border-radius:20px; padding:5px 12px; font-size:12px; color:rgba(255,255,255,.7); font-family:'DM Mono',monospace; }
-  .main { flex:1; max-width:1200px; margin:0 auto; width:100%; padding:32px; }
-  #landing { display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:70vh; text-align:center; }
-  .landing-icon { width:72px; height:72px; background:linear-gradient(135deg,var(--navy),var(--blue-light)); border-radius:20px; display:flex; align-items:center; justify-content:center; margin:0 auto 24px; font-size:32px; }
-  .landing-title { font-size:28px; font-weight:600; color:var(--navy); margin-bottom:10px; letter-spacing:-.5px; }
-  .landing-sub { font-size:16px; color:var(--text-muted); margin-bottom:40px; max-width:500px; font-weight:300; line-height:1.6; }
-  .chat-wrap { width:100%; max-width:680px; position:relative; }
-  .chat-input { width:100%; padding:16px 60px 16px 20px; border:2px solid var(--border); border-radius:14px; font-size:15px; font-family:'DM Sans',sans-serif; background:white; color:var(--text); outline:none; transition:border-color .2s,box-shadow .2s; box-shadow:0 4px 16px rgba(0,0,0,.06); }
-  .chat-input:focus { border-color:var(--blue); box-shadow:0 4px 20px rgba(30,95,168,.15); }
-  .chat-input::placeholder { color:var(--text-muted); }
-  .chat-send { position:absolute; right:10px; top:50%; transform:translateY(-50%); width:38px; height:38px; background:var(--navy); border:none; border-radius:10px; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:background .2s; color:white; font-size:16px; }
-  .chat-send:hover { background:var(--blue); }
-  .chat-hint { margin-top:14px; font-size:13px; color:var(--text-muted); }
-  .hint-chip { display:inline-block; background:white; border:1px solid var(--border); border-radius:20px; padding:6px 14px; margin:4px; font-size:12px; color:var(--text-muted); cursor:pointer; transition:all .2s; }
-  .hint-chip:hover { border-color:var(--blue); color:var(--blue); background:#f0f7ff; }
-  #dashboard { display:none; }
-  .chat-feed { background:white; border-radius:16px; border:1px solid var(--border); padding:24px; margin-bottom:24px; max-height:320px; overflow-y:auto; }
-  .msg { display:flex; gap:12px; margin-bottom:16px; animation:fadeIn .3s ease; }
-  .msg:last-child { margin-bottom:0; }
-  @keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
-  .msg-avatar { width:32px; height:32px; border-radius:8px; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:600; }
-  .msg-user .msg-avatar { background:var(--navy); color:white; }
-  .msg-system .msg-avatar { background:var(--accent); color:var(--navy); }
-  .msg-content { flex:1; }
-  .msg-name { font-size:11px; font-weight:600; color:var(--text-muted); margin-bottom:4px; text-transform:uppercase; letter-spacing:.5px; }
-  .msg-text { font-size:14px; color:var(--text); line-height:1.5; }
-  .msg-user .msg-text { color:var(--navy); font-weight:500; }
-  .stages-card { background:white; border-radius:16px; border:1px solid var(--border); overflow:hidden; margin-bottom:24px; }
-  .stages-header { padding:18px 24px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; }
-  .stages-header h3 { font-size:15px; font-weight:600; color:var(--navy); }
-  .progress-text { font-size:13px; color:var(--text-muted); }
-  .stage-row { display:flex; align-items:center; gap:16px; padding:14px 24px; border-bottom:1px solid #f8fafc; transition:background .3s; }
-  .stage-row:last-child { border-bottom:none; }
-  .stage-row.running { background:#f0f7ff; }
-  .stage-row.complete { background:#f0fdf8; }
-  .stage-num { width:28px; height:28px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-family:'DM Mono',monospace; font-size:11px; font-weight:500; background:#f1f5f9; color:var(--text-muted); flex-shrink:0; transition:all .3s; }
-  .stage-row.running .stage-num { background:var(--blue); color:white; }
-  .stage-row.complete .stage-num { background:var(--success); color:white; }
-  .stage-info { flex:1; }
-  .stage-name { font-size:13px; font-weight:500; color:var(--text); }
-  .stage-desc { font-size:12px; color:var(--text-muted); margin-top:2px; }
-  .stage-type { flex-shrink:0; }
-  .stage-status { flex-shrink:0; width:100px; text-align:right; }
-  .badge { display:inline-flex; align-items:center; gap:4px; padding:4px 10px; border-radius:20px; font-size:11px; font-weight:600; }
-  .badge::before { content:'●'; font-size:7px; }
-  .badge-waiting { background:#f1f5f9; color:#94a3b8; }
-  .badge-running { background:#dbeafe; color:#1e40af; animation:blink 1s infinite; }
-  .badge-complete { background:#d1fae5; color:#065f46; }
-  .badge-rpa { background:#dbeafe; color:#1e40af; }
-  .badge-ai { background:#ede9fe; color:#5b21b6; }
-  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.6} }
-  .stats-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:24px; }
-  .stat-card { background:white; border-radius:12px; padding:20px; border:1px solid var(--border); position:relative; overflow:hidden; }
-  .stat-card::before { content:''; position:absolute; top:0;left:0;right:0; height:3px; background:var(--accent); }
-  .stat-card.warn::before { background:var(--accent-warm); }
-  .stat-card.info::before { background:var(--blue-light); }
-  .stat-card.danger::before { background:var(--danger); }
-  .stat-label { font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;color:var(--text-muted);margin-bottom:10px; }
-  .stat-value { font-size:30px;font-weight:600;color:var(--navy);letter-spacing:-1px;line-height:1; }
-  .stat-detail { font-size:12px;color:var(--text-muted);margin-top:6px; }
-  .bottom-chat { background:white;border-radius:16px;border:1px solid var(--border);padding:16px 20px; }
-  .bottom-chat-inner { display:flex;gap:12px;align-items:center; }
-  .bottom-input { flex:1;padding:10px 16px;border:1.5px solid var(--border);border-radius:10px;font-size:14px;font-family:'DM Sans',sans-serif;outline:none;transition:border-color .2s; }
-  .bottom-input:focus { border-color:var(--blue); }
-  .bottom-send { padding:10px 20px;background:var(--navy);color:white;border:none;border-radius:10px;font-size:13px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;transition:background .2s;white-space:nowrap; }
-  .bottom-send:hover { background:var(--blue); }
-  .typing { display:flex;gap:4px;align-items:center;padding:4px 0; }
-  .typing span { width:7px;height:7px;background:var(--text-muted);border-radius:50%;animation:bounce 1.2s infinite; }
-  .typing span:nth-child(2) { animation-delay:.2s; }
-  .typing span:nth-child(3) { animation-delay:.4s; }
-  @keyframes bounce { 0%,80%,100%{transform:translateY(0)} 40%{transform:translateY(-6px)} }
-  .hidden { display:none!important; }
+:root{--navy:#0f2744;--navy-mid:#1a3a5c;--blue:#1e5fa8;--blue-light:#2e7dd1;--accent:#00c9a7;--accent-warm:#f59e0b;--danger:#ef4444;--success:#10b981;--bg:#f0f4f8;--card:#fff;--text:#1a2535;--muted:#64748b;--border:#e2e8f0}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column}
+/* Header */
+.hdr{background:linear-gradient(135deg,var(--navy) 0%,var(--navy-mid) 60%,#1a4a7a 100%);box-shadow:0 4px 20px rgba(0,0,0,.3)}
+.hdr-in{max-width:1300px;margin:0 auto;padding:16px 32px;display:flex;align-items:center;justify-content:space-between}
+.logo{width:40px;height:40px;background:var(--accent);border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-weight:600;color:var(--navy);font-size:14px;flex-shrink:0}
+.hdr-left{display:flex;align-items:center;gap:14px}
+.hdr-title h1{font-size:16px;font-weight:600;color:#fff}
+.hdr-title p{font-size:11px;color:rgba(255,255,255,.5);margin-top:1px}
+.hdr-right{display:flex;gap:8px;align-items:center}
+.pill{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:20px;padding:4px 12px;font-size:11px;color:rgba(255,255,255,.7);font-family:'DM Mono',monospace}
+.pill-live{color:var(--accent);border-color:rgba(0,201,167,.3);background:rgba(0,201,167,.1)}
+/* Main */
+.main{flex:1;max-width:1300px;margin:0 auto;width:100%;padding:32px}
+/* Landing */
+#landing{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:72vh;text-align:center}
+.land-icon{width:72px;height:72px;background:linear-gradient(135deg,var(--navy),var(--blue-light));border-radius:20px;display:flex;align-items:center;justify-content:center;margin:0 auto 24px;font-size:30px}
+.land-title{font-size:28px;font-weight:600;color:var(--navy);margin-bottom:10px;letter-spacing:-.5px}
+.land-sub{font-size:15px;color:var(--muted);margin-bottom:36px;max-width:480px;line-height:1.7;font-weight:300}
+.chat-wrap{width:100%;max-width:660px;position:relative}
+.chat-in{width:100%;padding:15px 56px 15px 20px;border:2px solid var(--border);border-radius:14px;font-size:15px;font-family:'DM Sans',sans-serif;background:#fff;color:var(--text);outline:none;transition:border-color .2s,box-shadow .2s;box-shadow:0 4px 16px rgba(0,0,0,.06)}
+.chat-in:focus{border-color:var(--blue);box-shadow:0 4px 20px rgba(30,95,168,.15)}
+.chat-in::placeholder{color:var(--muted)}
+.chat-btn{position:absolute;right:10px;top:50%;transform:translateY(-50%);width:36px;height:36px;background:var(--navy);border:none;border-radius:9px;cursor:pointer;color:#fff;font-size:15px;transition:background .2s;display:flex;align-items:center;justify-content:center}
+.chat-btn:hover{background:var(--blue)}
+.hints{margin-top:14px}
+.hint-chip{display:inline-block;background:#fff;border:1px solid var(--border);border-radius:20px;padding:6px 14px;margin:4px;font-size:12px;color:var(--muted);cursor:pointer;transition:all .2s}
+.hint-chip:hover{border-color:var(--blue);color:var(--blue);background:#f0f7ff}
+/* Dashboard */
+#dashboard{display:none}
+/* Chat feed */
+.feed{background:#fff;border-radius:16px;border:1px solid var(--border);padding:20px;margin-bottom:20px;max-height:280px;overflow-y:auto}
+.msg{display:flex;gap:12px;margin-bottom:14px;animation:fi .3s ease}
+.msg:last-child{margin-bottom:0}
+@keyframes fi{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.av{width:30px;height:30px;border-radius:8px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700}
+.msg-u .av{background:var(--navy);color:#fff}
+.msg-s .av{background:var(--accent);color:var(--navy)}
+.mn{font-size:10px;font-weight:600;color:var(--muted);margin-bottom:3px;text-transform:uppercase;letter-spacing:.5px}
+.mt{font-size:13px;color:var(--text);line-height:1.5}
+.msg-u .mt{color:var(--navy);font-weight:500}
+/* Stages */
+.stages-card{background:#fff;border-radius:16px;border:1px solid var(--border);overflow:hidden;margin-bottom:20px}
+.stages-hdr{padding:16px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.stages-hdr h3{font-size:14px;font-weight:600;color:var(--navy)}
+.prog-txt{font-size:12px;color:var(--muted)}
+.sr{display:flex;align-items:center;gap:14px;padding:13px 20px;border-bottom:1px solid #f8fafc;transition:background .3s;cursor:pointer}
+.sr:last-child{border-bottom:none}
+.sr:hover{background:#f8fafc}
+.sr.running{background:#f0f7ff}
+.sr.complete{background:#f0fdf8}
+.sr.complete:hover{background:#e8faf3}
+.sn{width:26px;height:26px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-size:10px;font-weight:600;background:#f1f5f9;color:var(--muted);flex-shrink:0;transition:all .3s}
+.sr.running .sn{background:var(--blue);color:#fff}
+.sr.complete .sn{background:var(--success);color:#fff}
+.si{flex:1}
+.sname{font-size:13px;font-weight:500;color:var(--text)}
+.sdesc{font-size:11px;color:var(--muted);margin-top:2px}
+.sr.complete .sname{color:var(--navy)}
+.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:20px;font-size:10px;font-weight:600}
+.badge:before{content:'●';font-size:6px}
+.bw{background:#f1f5f9;color:#94a3b8}
+.br{background:#dbeafe;color:#1e40af;animation:bl 1s infinite}
+.bc{background:#d1fae5;color:#065f46}
+.brpa{background:#dbeafe;color:#1e40af}
+.bai{background:#ede9fe;color:#5b21b6}
+@keyframes bl{0%,100%{opacity:1}50%{opacity:.6}}
+/* Typing */
+.typing{display:flex;gap:4px;align-items:center;padding:4px 0}
+.typing span{width:6px;height:6px;background:var(--muted);border-radius:50%;animation:bo 1.2s infinite}
+.typing span:nth-child(2){animation-delay:.2s}
+.typing span:nth-child(3){animation-delay:.4s}
+@keyframes bo{0%,80%,100%{transform:translateY(0)}40%{transform:translateY(-5px)}}
+/* Nav tabs */
+.nav{background:#fff;border-bottom:1px solid var(--border);margin-bottom:20px;border-radius:12px 12px 0 0;overflow:hidden}
+.nav-in{display:flex}
+.nt{padding:13px 20px;font-size:12px;font-weight:500;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;transition:all .2s;background:none;border-top:none;border-left:none;border-right:none;font-family:'DM Sans',sans-serif;white-space:nowrap}
+.nt:hover{color:var(--blue)}
+.nt.active{color:var(--blue);border-bottom-color:var(--blue)}
+/* Pages */
+.page{display:none}
+.page.active{display:block}
+/* Stats grid */
+.sg{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px}
+.sc{background:#fff;border-radius:12px;padding:18px;border:1px solid var(--border);position:relative;overflow:hidden;transition:transform .2s,box-shadow .2s;cursor:default}
+.sc:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.07)}
+.sc:before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--accent)}
+.sc.warn:before{background:var(--accent-warm)}
+.sc.info:before{background:var(--blue-light)}
+.sc.danger:before{background:var(--danger)}
+.sl{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);margin-bottom:8px}
+.sv{font-size:28px;font-weight:600;color:var(--navy);letter-spacing:-1px;line-height:1}
+.sd{font-size:11px;color:var(--muted);margin-top:5px}
+/* Table card */
+.tc{background:#fff;border-radius:14px;border:1px solid var(--border);overflow:hidden;margin-bottom:20px}
+.th2{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.th2 h3{font-size:14px;font-weight:600;color:var(--navy)}
+.th2 span{font-size:11px;color:var(--muted)}
+table{width:100%;border-collapse:collapse}
+th{background:#f8fafc;padding:10px 20px;text-align:left;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);border-bottom:1px solid var(--border)}
+td{padding:12px 20px;font-size:12px;border-bottom:1px solid #f1f5f9;color:var(--text)}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:#f8fafc}
+/* Info card */
+.ic{background:#fff;border-radius:14px;border:1px solid var(--border);padding:20px;margin-bottom:20px}
+.ic h3{font-size:13px;font-weight:600;color:var(--navy);margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.ic h3:before{content:'';width:3px;height:14px;background:var(--accent);border-radius:2px;display:inline-block}
+.ir{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid #f1f5f9}
+.ir:last-child{border-bottom:none}
+.ilb{font-size:11px;color:var(--muted);font-weight:500}
+.ivl{font-size:12px;color:var(--text);font-weight:500;text-align:right;max-width:60%}
+/* Two col */
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px}
+.three{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:20px}
+/* Risk */
+.ri{display:flex;align-items:flex-start;gap:12px;padding:12px 0;border-bottom:1px solid #f1f5f9}
+.ri:last-child{border-bottom:none}
+.rk{width:26px;height:26px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0}
+.rk1{background:#fee2e2;color:#991b1b}
+.rk2{background:#fef3c7;color:#92400e}
+.rk3{background:#fef3c7;color:#92400e}
+.rk4{background:#dbeafe;color:#1e40af}
+.rk5{background:#dbeafe;color:#1e40af}
+.rname{font-size:12px;font-weight:600;color:var(--navy)}
+.rdesc{font-size:11px;color:var(--muted);margin-top:2px;line-height:1.5}
+/* Materiality */
+.mc{background:#f8fafc;border-radius:9px;padding:14px;margin:10px 0}
+.mr{display:flex;justify-content:space-between;padding:7px 0;font-size:12px;border-bottom:1px solid #e2e8f0}
+.mr:last-child{border-bottom:none}
+.mr.sel{font-weight:600;color:var(--navy);background:#dbeafe;margin:3px -14px;padding:9px 14px;border-radius:6px;border:none}
+.mlb{color:var(--muted)}
+.mvl{font-family:'DM Mono',monospace;font-size:12px}
+/* Progress bar */
+.pw{margin:12px 0}
+.pl{display:flex;justify-content:space-between;margin-bottom:6px;font-size:12px;color:var(--muted)}
+.pb{height:7px;background:#e2e8f0;border-radius:4px;overflow:hidden}
+.pf{height:100%;border-radius:4px}
+.fg{background:linear-gradient(90deg,var(--success),var(--accent))}
+.fa{background:linear-gradient(90deg,var(--accent-warm),#f97316)}
+/* Rec box */
+.rb{border-radius:11px;padding:18px 20px;display:flex;align-items:flex-start;gap:14px;margin-bottom:16px}
+.rb-d{background:#fff7ed;border:1px solid #fed7aa}
+.rt{font-size:14px;font-weight:600;color:#9a3412;margin-bottom:5px}
+.rx{font-size:12px;color:#c2410c;line-height:1.6}
+/* Action list */
+.al{list-style:none}
+.al li{display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid #f1f5f9;font-size:12px;color:var(--text)}
+.al li:last-child{border-bottom:none}
+.an{width:20px;height:20px;background:var(--navy);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0;margin-top:1px}
+/* Detail panel */
+.detail-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.45);z-index:200;display:flex;align-items:center;justify-content:center;padding:24px}
+.detail-panel{background:#fff;border-radius:16px;max-width:640px;width:100%;max-height:80vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.25)}
+.dp-hdr{padding:20px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:#fff;border-radius:16px 16px 0 0}
+.dp-hdr h3{font-size:15px;font-weight:600;color:var(--navy)}
+.dp-close{width:30px;height:30px;border:none;background:#f1f5f9;border-radius:8px;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;color:var(--muted);transition:background .2s}
+.dp-close:hover{background:#e2e8f0}
+.dp-body{padding:20px 24px}
+.dp-meta{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.dp-tag{padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600}
+.dp-out{background:#f0fdf8;border-radius:10px;padding:14px;font-size:12px;line-height:1.7;color:var(--text);margin-top:12px;border-left:3px solid var(--accent)}
+.dp-out h4{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:8px}
+/* Bottom chat */
+.bc2{background:#fff;border-radius:14px;border:1px solid var(--border);padding:14px 18px}
+.bc2-in{display:flex;gap:10px;align-items:center}
+.bi{flex:1;padding:10px 14px;border:1.5px solid var(--border);border-radius:9px;font-size:13px;font-family:'DM Sans',sans-serif;outline:none;transition:border-color .2s}
+.bi:focus{border-color:var(--blue)}
+.bs{padding:10px 18px;background:var(--navy);color:#fff;border:none;border-radius:9px;font-size:12px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;transition:background .2s;white-space:nowrap}
+.bs:hover{background:var(--blue)}
+.hidden{display:none!important}
 </style>
 </head>
 <body>
-<div class="header">
-  <div class="header-inner">
-    <div class="header-left">
-      <div class="logo-box">HA</div>
-      <div class="header-title">
-        <h1>Harstone Audit LLP</h1>
-        <p>Intelligent Audit Automation Platform</p>
-      </div>
+<div class="hdr">
+  <div class="hdr-in">
+    <div class="hdr-left">
+      <div class="logo">HA</div>
+      <div class="hdr-title"><h1>Harstone Audit LLP</h1><p>Intelligent Audit Automation Platform</p></div>
     </div>
-    <div class="header-right">
+    <div class="hdr-right">
       <div class="pill">UiPath Cloud</div>
-      <div class="pill" style="color:var(--accent);border-color:rgba(0,201,167,.3);background:rgba(0,201,167,.1)">● Live</div>
+      <div class="pill pill-live">&#9679; Live</div>
     </div>
   </div>
 </div>
 <div class="main">
-  <div id="landing">
-    <div class="landing-icon">🏛️</div>
-    <div class="landing-title">Audit Data Collection Portal</div>
-    <div class="landing-sub">Type a command to initiate an audit engagement. The system will automatically execute all 8 data collection workflows.</div>
-    <div class="chat-wrap">
-      <input class="chat-input" id="landing-input" type="text" placeholder="e.g. Start engagement for Velmoor Retail Group Ltd" onkeydown="if(event.key==='Enter')startEngagement()">
-      <button class="chat-send" onclick="startEngagement()">&#10148;</button>
-    </div>
-    <div class="chat-hint">
-      <div style="margin-bottom:8px;font-size:12px">Try one of these:</div>
-      <span class="hint-chip" onclick="fillAndStart('Start engagement for Velmoor Retail Group Ltd')">Start engagement for Velmoor Retail Group Ltd</span>
-      <span class="hint-chip" onclick="fillAndStart('Run audit data collection for Velmoor')">Run audit data collection for Velmoor</span>
-      <span class="hint-chip" onclick="fillAndStart('Initiate new audit engagement')">Initiate new audit engagement</span>
-    </div>
+
+<!-- LANDING -->
+<div id="landing">
+  <div class="land-icon">&#127963;</div>
+  <div class="land-title">Audit Data Collection Portal</div>
+  <div class="land-sub">Type a command to initiate an audit engagement. The system will automatically execute all 8 data collection workflows.</div>
+  <div class="chat-wrap">
+    <input class="chat-in" id="land-in" type="text" placeholder="e.g. Start engagement for Velmoor Retail Group Ltd" onkeydown="if(event.key==='Enter')go()">
+    <button class="chat-btn" onclick="go()">&#10148;</button>
   </div>
-  <div id="dashboard">
-    <div class="chat-feed" id="chat-feed"></div>
-    <div class="stages-card">
-      <div class="stages-header">
-        <h3>Workflow Execution</h3>
-        <span class="progress-text" id="progress-text">0 of 8 complete</span>
-      </div>
-      <div id="stages-list"></div>
-    </div>
-    <div id="stats-section" class="hidden">
-      <div class="stats-grid">
-        <div class="stat-card"><div class="stat-label">Workflows Complete</div><div class="stat-value">8/8</div><div class="stat-detail">All automation steps executed</div></div>
-        <div class="stat-card info"><div class="stat-label">PBC Items</div><div class="stat-value">32</div><div class="stat-detail">15 high priority items</div></div>
-        <div class="stat-card warn"><div class="stat-label">PBC Completion</div><div class="stat-value">60%</div><div class="stat-detail">6 of 10 items satisfied</div></div>
-        <div class="stat-card danger"><div class="stat-label">Materiality</div><div class="stat-value">£60k</div><div class="stat-detail">5% of pre-tax profit</div></div>
-      </div>
-    </div>
-    <div class="bottom-chat">
-      <div class="bottom-chat-inner">
-        <input class="bottom-input" id="bottom-input" type="text" placeholder="Ask a question about this engagement..." onkeydown="if(event.key==='Enter')sendCommand()">
-        <button class="bottom-send" onclick="sendCommand()">Send</button>
-      </div>
-    </div>
+  <div class="hints">
+    <div style="margin-bottom:8px;font-size:12px;color:var(--muted)">Try one of these:</div>
+    <span class="hint-chip" onclick="fas('Start engagement for Velmoor Retail Group Ltd')">Start engagement for Velmoor Retail Group Ltd</span>
+    <span class="hint-chip" onclick="fas('Run audit data collection for Velmoor')">Run audit data collection for Velmoor</span>
+    <span class="hint-chip" onclick="fas('Initiate new audit engagement')">Initiate new audit engagement</span>
   </div>
 </div>
+
+<!-- DASHBOARD -->
+<div id="dashboard">
+  <div class="feed" id="feed"></div>
+  <div class="stages-card">
+    <div class="stages-hdr"><h3>Workflow Execution</h3><span class="prog-txt" id="ptxt">0 of 8 complete</span></div>
+    <div id="slist"></div>
+  </div>
+
+  <!-- TABS (hidden until complete) -->
+  <div id="tabs-section" class="hidden">
+    <div class="nav"><div class="nav-in">
+      <button class="nt active" onclick="showTab('t-dash',this)">Dashboard</button>
+      <button class="nt" onclick="showTab('t-pbc',this)">PBC Tracker</button>
+      <button class="nt" onclick="showTab('t-mat',this)">Materiality &amp; Risk</button>
+      <button class="nt" onclick="showTab('t-comp',this)">Completeness Report</button>
+      <button class="nt" onclick="showTab('t-eng',this)">Engagement Details</button>
+    </div></div>
+
+    <!-- DASHBOARD TAB -->
+    <div id="t-dash" class="page active">
+      <div class="sg">
+        <div class="sc"><div class="sl">Workflows Complete</div><div class="sv">8/8</div><div class="sd">All steps executed</div></div>
+        <div class="sc info"><div class="sl">PBC Items</div><div class="sv">32</div><div class="sd">15 high priority items</div></div>
+        <div class="sc warn"><div class="sl">PBC Completion</div><div class="sv">60%</div><div class="sd">6 of 10 satisfied</div></div>
+        <div class="sc danger"><div class="sl">Materiality</div><div class="sv">£60k</div><div class="sd">5% of pre-tax profit</div></div>
+      </div>
+      <div class="tc">
+        <div class="th2"><h3>Workflow Execution Summary</h3><span>Last run: 01 May 2026</span></div>
+        <table><thead><tr><th>Step</th><th>Workflow</th><th>Type</th><th>Output</th><th>Status</th></tr></thead><tbody>
+          <tr onclick="showDetail(0)" style="cursor:pointer"><td><span style="font-family:'DM Mono',monospace;font-size:11px;color:var(--muted)">01</span></td><td>COI &amp; Onboarding Check</td><td><span class="badge brpa">RPA</span></td><td style="font-size:11px;color:var(--muted)">No conflicts found</td><td><span class="badge bc">Complete</span></td></tr>
+          <tr onclick="showDetail(1)" style="cursor:pointer"><td><span style="font-family:'DM Mono',monospace;font-size:11px;color:var(--muted)">02</span></td><td>Companies House Lookup</td><td><span class="badge brpa">RPA</span></td><td style="font-size:11px;color:var(--muted)">16 fields extracted</td><td><span class="badge bc">Complete</span></td></tr>
+          <tr onclick="showDetail(2)" style="cursor:pointer"><td><span style="font-family:'DM Mono',monospace;font-size:11px;color:var(--muted)">03</span></td><td>Engagement Letter Generation</td><td><span class="badge brpa">RPA</span></td><td style="font-size:11px;color:var(--muted)">Letter dispatched</td><td><span class="badge bc">Complete</span></td></tr>
+          <tr onclick="showDetail(3)" style="cursor:pointer"><td><span style="font-family:'DM Mono',monospace;font-size:11px;color:var(--muted)">04</span></td><td>Send PBC List</td><td><span class="badge brpa">RPA</span></td><td style="font-size:11px;color:var(--muted)">32 items emailed</td><td><span class="badge bc">Complete</span></td></tr>
+          <tr onclick="showDetail(4)" style="cursor:pointer"><td><span style="font-family:'DM Mono',monospace;font-size:11px;color:var(--muted)">05</span></td><td>Risk Identification &amp; Materiality</td><td><span class="badge bai">AI Agent</span></td><td style="font-size:11px;color:var(--muted)">5 risks, £60k materiality</td><td><span class="badge bc">Complete</span></td></tr>
+          <tr onclick="showDetail(5)" style="cursor:pointer"><td><span style="font-family:'DM Mono',monospace;font-size:11px;color:var(--muted)">06</span></td><td>PBC List Generation</td><td><span class="badge bai">AI Agent</span></td><td style="font-size:11px;color:var(--muted)">25 items generated</td><td><span class="badge bc">Complete</span></td></tr>
+          <tr onclick="showDetail(6)" style="cursor:pointer"><td><span style="font-family:'DM Mono',monospace;font-size:11px;color:var(--muted)">07</span></td><td>PBC Monitoring &amp; Chasers</td><td><span class="badge bai">AI Agent</span></td><td style="font-size:11px;color:var(--muted)">2 chasers sent</td><td><span class="badge bc">Complete</span></td></tr>
+          <tr onclick="showDetail(7)" style="cursor:pointer"><td><span style="font-family:'DM Mono',monospace;font-size:11px;color:var(--muted)">08</span></td><td>Final Completeness Check</td><td><span class="badge bai">AI Agent</span></td><td style="font-size:11px;color:var(--muted)">Delay fieldwork</td><td><span class="badge bc">Complete</span></td></tr>
+        </tbody></table>
+      </div>
+    </div>
+
+    <!-- PBC TRACKER TAB -->
+    <div id="t-pbc" class="page">
+      <div class="sg">
+        <div class="sc"><div class="sl">Total Items</div><div class="sv">32</div><div class="sd">All assertions</div></div>
+        <div class="sc"><div class="sl">High Priority</div><div class="sv">15</div><div class="sd">Due 15 May 2025</div></div>
+        <div class="sc warn"><div class="sl">Outstanding</div><div class="sv">4</div><div class="sd">Chasers sent</div></div>
+        <div class="sc danger"><div class="sl">Inadequate</div><div class="sv">1</div><div class="sd">Resubmission needed</div></div>
+      </div>
+      <div class="tc">
+        <div class="th2"><h3>Document Request Items</h3><span>AI Agent generated — Step 6</span></div>
+        <table><thead><tr><th>#</th><th>Description</th><th>Assertion</th><th>Risk Area</th><th>Priority</th><th>Due Date</th><th>Status</th></tr></thead><tbody>
+          <tr><td>1</td><td>Trial balance as at 31 March 2025</td><td>Completeness</td><td>General</td><td><span class="badge" style="background:#fee2e2;color:#991b1b">High</span></td><td>15 May 2025</td><td><span class="badge bc">Complete</span></td></tr>
+          <tr><td>2</td><td>Revenue ledger with monthly analysis</td><td>Existence, Cut-off</td><td>Revenue Recognition</td><td><span class="badge" style="background:#fee2e2;color:#991b1b">High</span></td><td>15 May 2025</td><td><span class="badge" style="background:#fee2e2;color:#991b1b">Outstanding</span></td></tr>
+          <tr><td>3</td><td>Inventory count sheets — all locations</td><td>Existence</td><td>Inventory Valuation</td><td><span class="badge" style="background:#fee2e2;color:#991b1b">High</span></td><td>15 May 2025</td><td><span class="badge" style="background:#fef3c7;color:#92400e">Partial</span></td></tr>
+          <tr><td>4</td><td>Bank statements — all accounts</td><td>Completeness</td><td>Bank &amp; Cash</td><td><span class="badge" style="background:#fee2e2;color:#991b1b">High</span></td><td>15 May 2025</td><td><span class="badge bc">Complete</span></td></tr>
+          <tr><td>5</td><td>Management accounts — 12 months</td><td>Completeness</td><td>General</td><td><span class="badge" style="background:#fee2e2;color:#991b1b">High</span></td><td>15 May 2025</td><td><span class="badge bc">Complete</span></td></tr>
+          <tr><td>6</td><td>Going concern cash flow forecast</td><td>Valuation</td><td>Going Concern</td><td><span class="badge" style="background:#fee2e2;color:#991b1b">High</span></td><td>15 May 2025</td><td><span class="badge bc">Complete</span></td></tr>
+          <tr><td>7</td><td>Intercompany reconciliation schedules</td><td>Completeness</td><td>Group / Intercompany</td><td><span class="badge" style="background:#fee2e2;color:#991b1b">High</span></td><td>15 May 2025</td><td><span class="badge" style="background:#fee2e2;color:#991b1b">Outstanding</span></td></tr>
+          <tr><td>8</td><td>Board minutes — full year</td><td>Rights &amp; Obligations</td><td>Governance</td><td><span class="badge" style="background:#fef3c7;color:#92400e">Medium</span></td><td>20 May 2025</td><td><span class="badge bc">Complete</span></td></tr>
+          <tr><td>9</td><td>Trade payables listing with ageing</td><td>Completeness</td><td>Trade Payables</td><td><span class="badge" style="background:#fef3c7;color:#92400e">Medium</span></td><td>20 May 2025</td><td><span class="badge" style="background:#fee2e2;color:#991b1b">Outstanding</span></td></tr>
+          <tr><td>10</td><td>Signed management representation letter</td><td>All assertions</td><td>General</td><td><span class="badge" style="background:#fee2e2;color:#991b1b">High</span></td><td>15 May 2025</td><td><span class="badge" style="background:#fee2e2;color:#991b1b">Outstanding</span></td></tr>
+        </tbody></table>
+      </div>
+    </div>
+
+    <!-- MATERIALITY TAB -->
+    <div id="t-mat" class="page">
+      <div class="two">
+        <div class="ic">
+          <h3>Materiality Calculation</h3>
+          <div class="mc">
+            <div class="mr"><span class="mlb">0.5% of Revenue (£42,000k)</span><span class="mvl">£210,000</span></div>
+            <div class="mr"><span class="mlb">5% of Pre-Tax Profit (£1,200k)</span><span class="mvl">£60,000</span></div>
+            <div class="mr sel"><span class="mlb">&#10003; Selected Overall Materiality</span><span class="mvl">£60,000</span></div>
+            <div class="mr"><span class="mlb">Performance Materiality (75%)</span><span class="mvl">£45,000</span></div>
+            <div class="mr"><span class="mlb">Trivial Threshold (5%)</span><span class="mvl">£3,000</span></div>
+          </div>
+          <p style="font-size:11px;color:var(--muted);margin-top:10px;line-height:1.6">Lower figure selected due to 2.9% PBT margin and going concern sensitivity from prior year.</p>
+        </div>
+        <div class="ic">
+          <h3>Financial Profile</h3>
+          <div class="ir"><span class="ilb">Revenue</span><span class="ivl" style="font-family:'DM Mono',monospace">£42,000k</span></div>
+          <div class="ir"><span class="ilb">Pre-Tax Profit</span><span class="ivl" style="font-family:'DM Mono',monospace">£1,200k</span></div>
+          <div class="ir"><span class="ilb">Gross Margin</span><span class="ivl" style="font-family:'DM Mono',monospace">30.0%</span></div>
+          <div class="ir"><span class="ilb">Total Assets</span><span class="ivl" style="font-family:'DM Mono',monospace">£18,500k</span></div>
+          <div class="ir"><span class="ilb">Inventory</span><span class="ivl" style="font-family:'DM Mono',monospace">£3,100k</span></div>
+          <div class="ir"><span class="ilb">Total Liabilities</span><span class="ivl" style="font-family:'DM Mono',monospace">£12,800k</span></div>
+          <div class="ir"><span class="ilb">Revenue Growth</span><span class="ivl" style="color:#10b981;font-family:'DM Mono',monospace">+9.1% YoY</span></div>
+        </div>
+      </div>
+      <div class="ic">
+        <h3>Top 5 Key Audit Risk Areas</h3>
+        <div class="ri"><div class="rk rk1">1</div><div><div class="rname">Revenue Recognition <span class="badge" style="background:#fee2e2;color:#991b1b;margin-left:6px">High</span></div><div class="rdesc">Prior year cut-off error £340k. Multi-channel retail timing risk. Focus: cut-off testing, journal entry review for manual revenue postings.</div></div></div>
+        <div class="ri"><div class="rk rk2">2</div><div><div class="rname">Inventory Valuation &amp; Obsolescence <span class="badge" style="background:#fee2e2;color:#991b1b;margin-left:6px">High</span></div><div class="rdesc">Prior year discrepancy £180k at Bristol warehouse. Inventory £3,100k (16.8% of assets). Manual system reconciliation increases risk.</div></div></div>
+        <div class="ri"><div class="rk rk3">3</div><div><div class="rname">Going Concern <span class="badge" style="background:#fee2e2;color:#991b1b;margin-left:6px">High</span></div><div class="rdesc">Additional testing required in prior year. PBT margin 2.9%. Bank facility reliance with covenant conditions. Focus: cash flow forecasts, covenant compliance.</div></div></div>
+        <div class="ri"><div class="rk rk4">4</div><div><div class="rname">Trade Payables &amp; Intercompany <span class="badge" style="background:#fef3c7;color:#92400e;margin-left:6px">Medium</span></div><div class="rdesc">Trade payables understated £95k prior year. Intercompany timing difference £62k. Focus: supplier reconciliations, intercompany elimination.</div></div></div>
+        <div class="ri"><div class="rk rk5">5</div><div><div class="rname">Control Environment <span class="badge" style="background:#fef3c7;color:#92400e;margin-left:6px">Medium</span></div><div class="rdesc">No formal journal entry approval. Inventory system not integrated with finance system. Focus: journal entry testing, management override risk.</div></div></div>
+      </div>
+    </div>
+
+    <!-- COMPLETENESS TAB -->
+    <div id="t-comp" class="page">
+      <div class="sg">
+        <div class="sc"><div class="sl">Overall Completeness</div><div class="sv">60%</div><div class="sd">6 of 10 items complete</div></div>
+        <div class="sc"><div class="sl">Satisfactory</div><div class="sv">4</div><div class="sd">Fully verified</div></div>
+        <div class="sc warn"><div class="sl">Inadequate</div><div class="sv">1</div><div class="sd">Avonmouth missing</div></div>
+        <div class="sc danger"><div class="sl">Outstanding</div><div class="sv">4</div><div class="sd">Chasers sent</div></div>
+      </div>
+      <div class="rb rb-d"><div style="font-size:22px;flex-shrink:0">&#9888;&#65039;</div><div><div class="rt">Recommendation: Delay Fieldwork</div><div class="rx">Proceeding without the outstanding high-priority items would significantly impair the audit team's ability to perform effective procedures. Fieldwork planned start date of 15 May 2026 should be postponed until all critical gaps are resolved.</div></div></div>
+      <div class="two">
+        <div class="ic">
+          <h3>PBC Status Summary</h3>
+          <div class="pw"><div class="pl"><span>Overall completion</span><span>60%</span></div><div class="pb"><div class="pf fa" style="width:60%"></div></div></div>
+          <div class="pw"><div class="pl"><span>High priority items</span><span>40%</span></div><div class="pb"><div class="pf fa" style="width:40%"></div></div></div>
+          <div class="pw"><div class="pl"><span>Medium priority items</span><span>75%</span></div><div class="pb"><div class="pf fg" style="width:75%"></div></div></div>
+          <div style="margin-top:14px">
+            <div class="ir"><span class="ilb">PBC-001 Trial Balance</span><span><span class="badge bc">Satisfactory</span></span></div>
+            <div class="ir"><span class="ilb">PBC-002 Bank Statements</span><span><span class="badge bc">Satisfactory</span></span></div>
+            <div class="ir"><span class="ilb">PBC-003 Management Accounts</span><span><span class="badge bc">Satisfactory</span></span></div>
+            <div class="ir"><span class="ilb">PBC-004 Going Concern Forecast</span><span><span class="badge bc">Satisfactory</span></span></div>
+            <div class="ir"><span class="ilb">PBC-005 Inventory Count Sheets</span><span><span class="badge" style="background:#fef3c7;color:#92400e">Inadequate</span></span></div>
+            <div class="ir"><span class="ilb">PBC-006 Board Minutes</span><span><span class="badge bc">Satisfactory</span></span></div>
+            <div class="ir"><span class="ilb">PBC-007 Revenue Ledger</span><span><span class="badge" style="background:#fee2e2;color:#991b1b">Outstanding</span></span></div>
+            <div class="ir"><span class="ilb">PBC-008 Intercompany Schedules</span><span><span class="badge" style="background:#fee2e2;color:#991b1b">Outstanding</span></span></div>
+            <div class="ir"><span class="ilb">PBC-009 Trade Payables</span><span><span class="badge" style="background:#fee2e2;color:#991b1b">Outstanding</span></span></div>
+            <div class="ir"><span class="ilb">PBC-010 Management Rep Letter</span><span><span class="badge" style="background:#fee2e2;color:#991b1b">Outstanding</span></span></div>
+          </div>
+        </div>
+        <div class="ic">
+          <h3>Required Actions Before Fieldwork</h3>
+          <ul class="al">
+            <li><div class="an">1</div><div>Obtain <strong>Revenue Ledger Monthly Analysis</strong> immediately — high priority, material misstatement risk.</div></li>
+            <li><div class="an">2</div><div>Request <strong>Intercompany Reconciliation Schedules</strong> urgently — critical for group balance verification.</div></li>
+            <li><div class="an">3</div><div>Ensure <strong>Signed Management Representation Letter</strong> — mandatory, audit cannot finalise without this.</div></li>
+            <li><div class="an">4</div><div>Request <strong>Trade Payables Listing with Ageing</strong> — risk of incomplete liabilities.</div></li>
+            <li><div class="an">5</div><div>Obtain missing <strong>Inventory Count Sheets for Avonmouth</strong> — current submission covers Bristol only.</div></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- ENGAGEMENT DETAILS TAB -->
+    <div id="t-eng" class="page">
+      <div class="three">
+        <div class="ic">
+          <h3>Client Information</h3>
+          <div class="ir"><span class="ilb">Client Name</span><span class="ivl">Velmoor Retail Group Ltd</span></div>
+          <div class="ir"><span class="ilb">Company Number</span><span class="ivl" style="font-family:'DM Mono',monospace">04812937</span></div>
+          <div class="ir"><span class="ilb">Registered Address</span><span class="ivl">14 Merchant Lane, Bristol BS1 4HT</span></div>
+          <div class="ir"><span class="ilb">SIC Code</span><span class="ivl" style="font-family:'DM Mono',monospace">47190 — Retail</span></div>
+          <div class="ir"><span class="ilb">Company Status</span><span class="ivl"><span class="badge bc">Active</span></span></div>
+          <div class="ir"><span class="ilb">Structure</span><span class="ivl">Group + 2 subsidiaries</span></div>
+        </div>
+        <div class="ic">
+          <h3>Engagement Information</h3>
+          <div class="ir"><span class="ilb">Engagement Ref</span><span class="ivl" style="font-family:'DM Mono',monospace">VRG-2025-001</span></div>
+          <div class="ir"><span class="ilb">Year End Date</span><span class="ivl">31 March 2025</span></div>
+          <div class="ir"><span class="ilb">Engagement Partner</span><span class="ivl">Sarah Okonkwo</span></div>
+          <div class="ir"><span class="ilb">Audit Manager</span><span class="ivl">To be assigned</span></div>
+          <div class="ir"><span class="ilb">Fee Estimate</span><span class="ivl" style="font-family:'DM Mono',monospace">£38,500 + VAT</span></div>
+          <div class="ir"><span class="ilb">Reporting Standard</span><span class="ivl">FRS 102 (UK GAAP)</span></div>
+        </div>
+        <div class="ic">
+          <h3>Key Contacts</h3>
+          <div class="ir"><span class="ilb">CEO</span><span class="ivl">Abigail Velmoor</span></div>
+          <div class="ir"><span class="ilb">CFO</span><span class="ivl">Charles Obi</span></div>
+          <div class="ir"><span class="ilb">Client Email</span><span class="ivl">finance@velmoor.co.uk</span></div>
+          <div class="ir"><span class="ilb">Subsidiary 1</span><span class="ivl">Velmoor Online Ltd</span></div>
+          <div class="ir"><span class="ilb">Subsidiary 2</span><span class="ivl">Velmoor Logistics Ltd</span></div>
+          <div class="ir"><span class="ilb">Last Accounts Filed</span><span class="ivl">Year ended 31 Mar 2024</span></div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- end tabs-section -->
+
+  <!-- Q&A chat -->
+  <div class="bc2">
+    <div class="bc2-in">
+      <input class="bi" id="bot-in" type="text" placeholder="Ask a question about this engagement..." onkeydown="if(event.key==='Enter')ask()">
+      <button class="bs" onclick="ask()">Send</button>
+    </div>
+  </div>
+
+</div><!-- end dashboard -->
+</div><!-- end main -->
+
+<!-- Detail overlay -->
+<div class="detail-overlay hidden" id="detail-overlay" onclick="closeDetail(event)">
+  <div class="detail-panel" id="detail-panel">
+    <div class="dp-hdr">
+      <h3 id="dp-title"></h3>
+      <button class="dp-close" onclick="document.getElementById('detail-overlay').classList.add('hidden')">&#215;</button>
+    </div>
+    <div class="dp-body" id="dp-body"></div>
+  </div>
+</div>
+
 <script>
 const stages=[
-  {num:"01",name:"COI & Onboarding Check",desc:"Conflict of interest register check",type:"RPA",msg:"Running COI check against firm register... No conflicts found for Velmoor Retail Group Ltd. Engagement tracker updated.",delay:2500},
-  {num:"02",name:"Companies House Lookup",desc:"Entity data extraction — 16 fields",type:"RPA",msg:"Querying Companies House for Velmoor Retail Group Ltd... 16 fields extracted: registered address, SIC code 47190, directors Abigail Velmoor & Charles Obi, 2 subsidiaries confirmed.",delay:3000},
-  {num:"03",name:"Engagement Letter Generation",desc:"Template populated & dispatched",type:"RPA",msg:"Populating engagement letter template... Letter generated for VRG-2025-001. Dispatched to finance@velmoor.co.uk. Read receipt requested.",delay:2500},
-  {num:"04",name:"Send PBC List & Confirm Receipt",desc:"32 items emailed to client",type:"RPA",msg:"Formatting PBC list (32 items, 15 high priority)... Email sent to finance@velmoor.co.uk. Deadline: 15 May 2026. Tracker updated.",delay:2000},
-  {num:"05",name:"Risk Identification & Materiality",desc:"5 risk areas, £60k materiality",type:"AI",msg:"AI Agent analysing financial data and prior year notes... Materiality: £60,000 (5% of PBT). Top 5 risks: Revenue Recognition, Inventory Valuation, Going Concern, Trade Payables, Control Environment.",delay:3500},
-  {num:"06",name:"PBC List Generation",desc:"25 tailored items generated",type:"AI",msg:"AI Agent generating tailored PBC document request list... 25 items created across 5 assertion categories. Grouped by risk priority.",delay:3000},
-  {num:"07",name:"PBC Monitoring & Chasers",desc:"2 chaser emails generated",type:"AI",msg:"AI Agent reviewing client portal submissions... 10 items assessed: 4 satisfactory, 1 inadequate (Avonmouth inventory missing), 4 outstanding. 2 chaser emails dispatched.",delay:3500},
-  {num:"08",name:"Final Completeness Check",desc:"Fieldwork delay recommended",type:"AI",msg:"AI Agent performing final completeness review... Overall: 60%. 4 high-priority items outstanding. RECOMMENDATION: Delay fieldwork until critical gaps resolved.",delay:3000}
+  {num:"01",name:"COI & Onboarding Check",type:"RPA",msg:"Running COI check against firm register... No conflicts found for Velmoor Retail Group Ltd. Engagement tracker updated.",delay:2500},
+  {num:"02",name:"Companies House Lookup",type:"RPA",msg:"Querying Companies House... 16 fields extracted: registered address, SIC 47190, directors Abigail Velmoor &amp; Charles Obi, 2 subsidiaries confirmed.",delay:3000},
+  {num:"03",name:"Engagement Letter Generation",type:"RPA",msg:"Populating letter template for VRG-2025-001... Dispatched to finance@velmoor.co.uk. Read receipt requested.",delay:2500},
+  {num:"04",name:"Send PBC List & Confirm Receipt",type:"RPA",msg:"Formatting PBC list (32 items, 15 high priority)... Email sent to finance@velmoor.co.uk. Deadline: 15 May 2026.",delay:2000},
+  {num:"05",name:"Risk Identification & Materiality",type:"AI",msg:"AI Agent analysing financial data and prior year notes... Materiality: £60,000. Top 5 risks identified: Revenue Recognition, Inventory Valuation, Going Concern, Trade Payables, Control Environment.",delay:3500},
+  {num:"06",name:"PBC List Generation",type:"AI",msg:"AI Agent generating tailored PBC list... 25 items across 5 assertion categories (Existence, Completeness, Valuation, Rights &amp; Obligations, Presentation &amp; Disclosure). Grouped by risk priority.",delay:3000},
+  {num:"07",name:"PBC Monitoring & Chasers",type:"AI",msg:"AI Agent reviewing submissions... 10 items assessed: 4 satisfactory, 1 inadequate (Avonmouth inventory missing), 4 outstanding. 2 professional chaser emails generated and sent.",delay:3500},
+  {num:"08",name:"Final Completeness Check",type:"AI",msg:"AI Agent completing final review... Overall: 60%. 4 high-priority items outstanding. RECOMMENDATION: Delay fieldwork until critical gaps resolved. Report issued to engagement manager.",delay:3000}
 ];
-function fillAndStart(t){document.getElementById('landing-input').value=t;startEngagement();}
-function startEngagement(){
-  const input=document.getElementById('landing-input').value.trim();
-  if(!input)return;
+
+const details=[
+  {title:"COI & Onboarding Check — RPA Output",tags:["RPA","Complete","Step 1"],output:"<h4>Execution Output</h4><p>COI register read: 6 rows processed from COI_Register.xlsx<br>Client checked: Velmoor Retail Group Ltd<br>Match found: <strong>None</strong><br>Directors checked: Abigail Velmoor, Charles Obi — No matches<br>Result: <strong>COI Clear</strong><br>Engagement Tracker updated: COI Clear — 30 Apr 2026<br>Workflow execution time: ~8 seconds</p>"},
+  {title:"Companies House Lookup — RPA Output",tags:["RPA","Complete","Step 2"],output:"<h4>Extracted Entity Data</h4><p>Registered Name: Velmoor Retail Group Ltd<br>Company Number: 04812937<br>Registered Address: 14 Merchant Lane, Bristol, BS1 4HT<br>Incorporation Date: 12 March 2003<br>SIC Code: 47190 — Other retail sale in non-specialised stores<br>Company Status: Active<br>Director 1: Abigail Velmoor — CEO<br>Director 2: Charles Obi — CFO<br>Share Capital: £500,000 ordinary shares<br>Subsidiary 1: Velmoor Online Ltd — 07341852<br>Subsidiary 2: Velmoor Logistics Ltd — 08923416<br>Last Annual Filing: 31 March 2024<br>Audit Requirement: Yes — exceeds small company threshold<br><br><strong>Entity_Profile.docx generated and saved to engagement folder.</strong></p>"},
+  {title:"Engagement Letter Generation — RPA Output",tags:["RPA","Complete","Step 3"],output:"<h4>Letter Details</h4><p>Client: Velmoor Retail Group Ltd<br>Engagement Ref: VRG-2025-001<br>Year End: 31 March 2025<br>Partner: Sarah Okonkwo<br>Fee Estimate: £38,500 + VAT<br>Scope: Statutory audit of consolidated financial statements under FRS 102<br>Dispatched to: finance@velmoor.co.uk<br>Send date: 30 Apr 2026<br>Response deadline: 07 May 2026<br><br><strong>Velmoor_Engagement_Letter.docx generated and emailed to client.</strong></p>"},
+  {title:"Send PBC List & Confirm Receipt — RPA Output",tags:["RPA","Complete","Step 4"],output:"<h4>Dispatch Summary</h4><p>File sent: Velmoor_PBC_List.xlsx<br>Total items: 32<br>High priority items: 15 (due 15 May 2026)<br>Medium priority items: 17 (due 20 May 2026)<br>Recipient: finance@velmoor.co.uk (Charles Obi, CFO)<br>Send date: 30 Apr 2026<br>Submission deadline: 15 May 2026<br>Read receipt: Requested<br><br><strong>Email delivered. Tracker updated with send timestamp and deadline.</strong></p>"},
+  {title:"Risk Identification & Materiality — AI Agent Output",tags:["AI Agent","Complete","Step 5"],output:"<h4>AI Agent Analysis Result</h4><p><strong>Materiality Calculation:</strong><br>0.5% of Revenue (£42,000k) = £210,000<br>5% of Pre-Tax Profit (£1,200k) = £60,000<br>Selected: <strong>£60,000</strong> (lower figure)<br>Performance Materiality: £45,000<br>Trivial Threshold: £3,000<br><br><strong>Top 5 Risk Areas:</strong><br>1. Revenue Recognition — prior year cut-off error £340k<br>2. Inventory Valuation — prior year discrepancy £180k<br>3. Going Concern — margin pressure, bank facility reliance<br>4. Trade Payables &amp; Intercompany — understatement £95k<br>5. Control Environment — no journal approval process<br><br><strong>Velmoor_Risk_and_Materiality.docx generated.</strong></p>"},
+  {title:"PBC List Generation — AI Agent Output",tags:["AI Agent","Complete","Step 6"],output:"<h4>Generated PBC List Summary</h4><p>Total items generated: <strong>25</strong><br>High priority (due 15 May): 6 items<br>Medium priority (due 20 May): 19 items<br><br><strong>Items by Assertion:</strong><br>Existence: 5 items<br>Completeness: 7 items<br>Valuation: 6 items<br>Rights &amp; Obligations: 4 items<br>Presentation &amp; Disclosure: 3 items<br><br><strong>Key items include:</strong> Trial balance, Revenue ledger, Inventory count sheets, Bank statements, Going concern forecasts, Intercompany reconciliations, Management representation letter.<br><br><strong>Velmoor_PBC_List.xlsx generated and saved to engagement folder.</strong></p>"},
+  {title:"PBC Monitoring & Chasers — AI Agent Output",tags:["AI Agent","Complete","Step 7"],output:"<h4>Submission Assessment</h4><p>Total items reviewed: 10<br>Satisfactory: 4 (Trial Balance, Bank Statements, Management Accounts, Going Concern Forecast)<br>Inadequate: 1 (Inventory count sheets — Avonmouth site missing)<br>Outstanding: 4 (Revenue Ledger, Intercompany Schedules, Trade Payables, Management Rep Letter)<br><br><strong>Chaser Email 1:</strong> Sent to Charles Obi re. PBC-005 — requesting Avonmouth inventory count sheets. Deadline: 5 May 2026.<br><br><strong>Chaser Email 2:</strong> Sent to Charles Obi re. PBC-007, PBC-008, PBC-009, PBC-010 — 4 outstanding items. Deadline: 5 May 2026.<br><br><strong>PBC_Submissions_Log.xlsx updated.</strong></p>"},
+  {title:"Final Completeness Check — AI Agent Output",tags:["AI Agent","Complete","Step 8"],output:"<h4>Completeness Report</h4><p>Overall completeness: <strong>60%</strong> (6 of 10 items)<br>High priority completion: 40%<br>Medium priority completion: 75%<br><br><strong>Critical Gaps:</strong><br>&#8226; Revenue Ledger — High — material misstatement risk<br>&#8226; Intercompany Schedules — High — group statements impact<br>&#8226; Management Rep Letter — High — mandatory requirement<br>&#8226; Trade Payables Listing — Medium — liability understatement risk<br>&#8226; Inventory Count Sheets — Partial — Avonmouth missing<br><br><strong>Recommendation: DELAY FIELDWORK</strong><br>Fieldwork start date of 15 May 2026 should be postponed.<br><br><strong>Velmoor_PBC_Completeness_Report.docx issued to engagement manager.</strong></p>"}
+];
+
+function fas(t){document.getElementById('land-in').value=t;go();}
+
+function go(){
+  const v=document.getElementById('land-in').value.trim();
+  if(!v)return;
   document.getElementById('landing').style.display='none';
   document.getElementById('dashboard').style.display='block';
-  const list=document.getElementById('stages-list');
-  list.innerHTML='';
+  const sl=document.getElementById('slist');sl.innerHTML='';
   stages.forEach((s,i)=>{
-    list.innerHTML+=`<div class="stage-row" id="stage-${i}"><div class="stage-num">${s.num}</div><div class="stage-info"><div class="stage-name">${s.name}</div><div class="stage-desc">${s.desc}</div></div><div class="stage-type"><span class="badge ${s.type==='RPA'?'badge-rpa':'badge-ai'}">${s.type==='RPA'?'RPA':'AI Agent'}</span></div><div class="stage-status"><span class="badge badge-waiting" id="stage-badge-${i}">Waiting</span></div></div>`;
+    sl.innerHTML+=`<div class="sr" id="sr-${i}" onclick="showDetail(${i})"><div class="sn">${s.num}</div><div class="si"><div class="sname">${s.name}</div><div class="sdesc" id="sd-${i}">Waiting to execute...</div></div><div><span class="badge ${s.type==='RPA'?'brpa':'bai'}">${s.type==='RPA'?'RPA':'AI Agent'}</span></div><div style="width:90px;text-align:right"><span class="badge bw" id="sb-${i}">Waiting</span></div></div>`;
   });
-  addMsg('user','You',input);
+  addMsg('u','You',v);
   setTimeout(()=>{
-    addMsg('system','Portal','Engagement initiated for <strong>Velmoor Retail Group Ltd</strong> — Ref: VRG-2025-001. Starting automated data collection across 8 workflows (4 RPA + 4 AI Agent)...');
-    setTimeout(()=>runStage(0),1000);
+    addMsg('s','Portal','Engagement initiated for <strong>Velmoor Retail Group Ltd</strong> — Ref: VRG-2025-001. Starting automated data collection across 8 workflows (4 RPA + 4 AI Agent). Click any workflow row to see its output.');
+    setTimeout(()=>runS(0),1000);
   },800);
 }
-function runStage(i){
-  if(i>=stages.length){finishDemo();return;}
+
+function runS(i){
+  if(i>=stages.length){done();return;}
   const s=stages[i];
-  document.getElementById(`stage-${i}`).className='stage-row running';
-  const badge=document.getElementById(`stage-badge-${i}`);
-  badge.className='badge badge-running';badge.textContent='Running...';
-  document.getElementById('progress-text').textContent=`${i} of 8 complete`;
+  document.getElementById(`sr-${i}`).className='sr running';
+  const b=document.getElementById(`sb-${i}`);b.className='badge br';b.textContent='Running...';
+  document.getElementById(`sd-${i}`).textContent='Executing...';
+  document.getElementById('ptxt').textContent=`${i} of 8 complete`;
   addTyping();
   setTimeout(()=>{
-    removeTyping();
-    addMsg('system',`Stage ${i+1}`,s.msg);
-    document.getElementById(`stage-${i}`).className='stage-row complete';
-    const b=document.getElementById(`stage-badge-${i}`);
-    b.className='badge badge-complete';b.textContent='Complete';
-    document.getElementById('progress-text').textContent=`${i+1} of 8 complete`;
-    setTimeout(()=>runStage(i+1),600);
+    removeTyping();addMsg('s',`Stage ${i+1}`,s.msg);
+    document.getElementById(`sr-${i}`).className='sr complete';
+    const b2=document.getElementById(`sb-${i}`);b2.className='badge bc';b2.textContent='Complete ↗';
+    document.getElementById(`sd-${i}`).textContent='Click to view output';
+    document.getElementById('ptxt').textContent=`${i+1} of 8 complete`;
+    setTimeout(()=>runS(i+1),600);
   },s.delay);
 }
-function finishDemo(){
-  addMsg('system','Portal','<strong>All 8 workflows completed successfully.</strong> Data collection stage is complete. PBC completion: 60%. Recommendation: Delay fieldwork pending 4 outstanding items.');
-  document.getElementById('stats-section').classList.remove('hidden');
-  document.getElementById('bottom-input').focus();
+
+function done(){
+  addMsg('s','Portal','<strong>&#127881; All 8 workflows completed.</strong> Data collection stage complete. PBC completion: 60%. Fieldwork recommendation: Delay. Use the tabs below to explore full results.');
+  document.getElementById('tabs-section').classList.remove('hidden');
+  document.getElementById('bot-in').focus();
 }
-function addMsg(type,name,text){
-  const feed=document.getElementById('chat-feed');
-  const div=document.createElement('div');
-  div.className=`msg msg-${type}`;
-  div.innerHTML=`<div class="msg-avatar">${type==='user'?'RR':'HA'}</div><div class="msg-content"><div class="msg-name">${name}</div><div class="msg-text">${text}</div></div>`;
-  feed.appendChild(div);feed.scrollTop=feed.scrollHeight;
+
+function showDetail(i){
+  if(!document.getElementById(`sr-${i}`).classList.contains('complete'))return;
+  const d=details[i];
+  document.getElementById('dp-title').textContent=d.title;
+  let tags=d.tags.map(t=>`<span class="dp-tag badge ${t==='RPA'?'brpa':t==='AI Agent'?'bai':t==='Complete'?'bc':'bw'}">${t}</span>`).join(' ');
+  document.getElementById('dp-body').innerHTML=`<div class="dp-meta">${tags}</div><div class="dp-out">${d.output}</div>`;
+  document.getElementById('detail-overlay').classList.remove('hidden');
+}
+
+function closeDetail(e){if(e.target===document.getElementById('detail-overlay'))document.getElementById('detail-overlay').classList.add('hidden');}
+
+function showTab(id,btn){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nt').forEach(t=>t.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  btn.classList.add('active');
+}
+
+function addMsg(t,n,x){
+  const f=document.getElementById('feed');
+  const d=document.createElement('div');d.className=`msg msg-${t}`;
+  d.innerHTML=`<div class="av">${t==='u'?'RR':'HA'}</div><div><div class="mn">${n}</div><div class="mt">${x}</div></div>`;
+  f.appendChild(d);f.scrollTop=f.scrollHeight;
 }
 function addTyping(){
-  const feed=document.getElementById('chat-feed');
-  const div=document.createElement('div');
-  div.className='msg msg-system';div.id='typing-indicator';
-  div.innerHTML='<div class="msg-avatar">HA</div><div class="msg-content"><div class="msg-name">Portal</div><div class="typing"><span></span><span></span><span></span></div></div>';
-  feed.appendChild(div);feed.scrollTop=feed.scrollHeight;
+  const f=document.getElementById('feed');const d=document.createElement('div');
+  d.className='msg msg-s';d.id='ti';
+  d.innerHTML='<div class="av">HA</div><div><div class="mn">Portal</div><div class="typing"><span></span><span></span><span></span></div></div>';
+  f.appendChild(d);f.scrollTop=f.scrollHeight;
 }
-function removeTyping(){const t=document.getElementById('typing-indicator');if(t)t.remove();}
-const responses={
-  materiality:'Materiality for this engagement is set at <strong>£60,000</strong>, based on 5% of pre-tax profit (£1,200k). Lower than 0.5% of revenue (£210,000). Selected due to low PBT margin of 2.9% and going concern sensitivity.',
-  risk:'Top 5 audit risk areas: <strong>1. Revenue Recognition</strong> (prior year cut-off error £340k), <strong>2. Inventory Valuation</strong> (prior year discrepancy £180k), <strong>3. Going Concern</strong> (margin pressure), <strong>4. Trade Payables & Intercompany</strong> (understatement £95k), <strong>5. Control Environment</strong> (no journal approval process).',
-  pbc:'The PBC list contains <strong>32 items</strong> across 5 assertion categories. 15 high priority (due 15 May 2026), 17 medium priority (due 20 May 2026). Currently 6 of 10 tracked items complete (60%).',
-  fieldwork:'Fieldwork is currently <strong>recommended to be delayed</strong>. 4 high-priority items outstanding: Revenue Ledger, Intercompany Reconciliation Schedules, Management Representation Letter, and Trade Payables Listing.',
-  client:'Client: <strong>Velmoor Retail Group Ltd</strong>. No: 04812937. Address: 14 Merchant Lane, Bristol BS1 4HT. SIC: 47190 (Retail). Directors: Abigail Velmoor (CEO), Charles Obi (CFO). Subsidiaries: Velmoor Online Ltd, Velmoor Logistics Ltd.',
-  default:'I can answer questions about this engagement. Try asking about <strong>materiality</strong>, <strong>risk areas</strong>, <strong>PBC status</strong>, <strong>fieldwork readiness</strong>, or <strong>client details</strong>.'
+function removeTyping(){const t=document.getElementById('ti');if(t)t.remove();}
+
+const resp={
+  mat:'Materiality is set at <strong>£60,000</strong> (5% of PBT £1,200k). Lower than 0.5% of revenue (£210,000). Performance materiality: £45,000.',
+  risk:'Top 5 risks: <strong>1. Revenue Recognition</strong> (£340k cut-off error), <strong>2. Inventory Valuation</strong> (£180k discrepancy), <strong>3. Going Concern</strong> (margin pressure), <strong>4. Trade Payables</strong> (£95k understatement), <strong>5. Control Environment</strong> (no journal approvals).',
+  pbc:'32 PBC items total. 15 high priority (due 15 May), 17 medium (due 20 May). Currently 6 of 10 tracked items complete (60%). 4 outstanding, 1 inadequate.',
+  field:'Fieldwork is <strong>recommended to be delayed</strong>. 4 outstanding: Revenue Ledger, Intercompany Schedules, Management Rep Letter, Trade Payables Listing.',
+  client:'<strong>Velmoor Retail Group Ltd</strong> — No. 04812937 — 14 Merchant Lane, Bristol. Directors: Abigail Velmoor (CEO), Charles Obi (CFO). Subsidiaries: Velmoor Online Ltd, Velmoor Logistics Ltd.',
+  def:'Ask me about <strong>materiality</strong>, <strong>risk areas</strong>, <strong>PBC status</strong>, <strong>fieldwork readiness</strong>, or <strong>client details</strong>.'
 };
-function sendCommand(){
-  const input=document.getElementById('bottom-input');
-  const text=input.value.trim();if(!text)return;
-  input.value='';addMsg('user','You',text);addTyping();
-  const lower=text.toLowerCase();
-  let reply=responses.default;
-  if(lower.includes('material'))reply=responses.materiality;
-  else if(lower.includes('risk'))reply=responses.risk;
-  else if(lower.includes('pbc')||lower.includes('document'))reply=responses.pbc;
-  else if(lower.includes('fieldwork')||lower.includes('commence')||lower.includes('start'))reply=responses.fieldwork;
-  else if(lower.includes('client')||lower.includes('velmoor'))reply=responses.client;
-  setTimeout(()=>{removeTyping();addMsg('system','Portal',reply);},1200);
+function ask(){
+  const input=document.getElementById('bot-in');const v=input.value.trim();if(!v)return;
+  input.value='';addMsg('u','You',v);addTyping();
+  const l=v.toLowerCase();
+  let r=resp.def;
+  if(l.includes('mat'))r=resp.mat;
+  else if(l.includes('risk'))r=resp.risk;
+  else if(l.includes('pbc')||l.includes('doc'))r=resp.pbc;
+  else if(l.includes('field')||l.includes('comm'))r=resp.field;
+  else if(l.includes('client')||l.includes('velmoor'))r=resp.client;
+  setTimeout(()=>{removeTyping();addMsg('s','Portal',r);},1200);
 }
 </script>
 </body>
